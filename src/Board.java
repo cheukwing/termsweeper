@@ -39,7 +39,9 @@ public class Board {
   }
 
   public void flag(int x, int y, Flag flag) {
-    board[y][x].setFlag(flag);
+    if (!board[y][x].isRevealedSquare()) {
+      board[y][x].setFlag(flag);
+    }
   }
 
   private void revealSurroundings(int x, int y) {
@@ -84,9 +86,16 @@ public class Board {
     return numRevealed == length * width - numMines;
   }
 
-  public void printBoard() {
+  public void printBoard(boolean isLose) {
     System.out.println("Board:");
+    System.out.printf("\\ ");
+    for (int i = 0; i < width; i++) {
+      System.out.printf(i + " ");
+    }
+    System.out.printf("\n");
+
     for (int i = 0; i < length; i++) {
+      System.out.printf(i + " ");
       for (int j = 0; j < width; j++) {
         Square square = board[i][j];
         Flag flag = square.getFlag();
@@ -96,6 +105,8 @@ public class Board {
           } else {
             System.out.printf("? ");
           }
+        } else if (square.isMineSquare() && isLose) {
+          System.out.printf("x ");
         } else if (!square.isRevealedSquare()) {
           System.out.printf(". ");
         } else if (square.isMineSquare()){

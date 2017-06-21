@@ -1,24 +1,35 @@
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.util.Scanner;
 
 public class TermSweeper {
   public static void main(String[] args) {
     System.out.println("Welcome to TermSweeper!");
-
-    Board board = new Board(6, 5);
-    board.fullBoardPrint();
-    System.out.println();
+    System.out.println("To reveal a tile, type \"p <x> <y>\"");
+    System.out.println("To flag, qFlag or clear type \"f/q/c <x> <y> \"");
 
     Scanner sc = new Scanner(System.in);
+    System.out.println("Enter the board width: ");
+    int width = sc.nextInt();
+    System.out.println("Enter the board length: ");
+    int length = sc.nextInt();
+
+    Board board = new Board(width, length);
+    System.out.println();
+
     while(!board.isWon()) {
-      board.printBoard();
-      System.out.println("p x y, f x y, q x y, c x y");
-      char c = sc.next().charAt(0);
+      board.printBoard(false);
+      char c;
+      do {
+        System.out.println("Enter your move: ");
+        c = sc.next().charAt(0);
+      } while (!Character.isAlphabetic(c));
       int x = sc.nextInt();
       int y = sc.nextInt();
       switch(c) {
         case 'p': {
           if (!board.play(x, y)) {
-            board.printBoard();
+            board.printBoard(true);
             System.out.println("You Lose!");
             return;
           }
@@ -37,11 +48,13 @@ public class TermSweeper {
           break;
         }
         default: {
-          System.out.println("haha what");
+          System.out.println("Unrecognised Move.");
         }
       }
     }
-    System.out.println("Weiner");
+
+    board.printBoard(false);
+    System.out.println("You Win!");
   }
 
 }
