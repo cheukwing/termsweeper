@@ -5,11 +5,13 @@ public class Board {
   private final int numMines;
   private final int width;
   private final int length;
+  private int numRevealed;
 
   public Board(int width, int length) {
     this.width = width;
     this.length = length;
-    board = new Square[length][width];
+    this.numRevealed = 0;
+    this.board = new Square[length][width];
     Random random = new Random();
     int mineNum = 0;
     for (int i = 0; i < length; i++) {
@@ -21,7 +23,14 @@ public class Board {
         board[i][j] = new Square(isMine);
       }
     }
-    numMines = mineNum;
+
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < width; j++) {
+        board[i][j].setNumber(getSurroundingMines(j, i));
+      }
+    }
+
+    this.numMines = mineNum;
   }
 
   public boolean play(int x, int y) {
@@ -29,35 +38,88 @@ public class Board {
     return !board[y][x].isMineSquare();
   }
 
+  public void flag(int x, int y, Flag flag) {
+    board[y][x].setFlag(flag);
+  }
+
   private void revealSurroundings(int x, int y) {
     board[y][x].reveal();
-    if (getSurroundingMines(x, y) == 0) {
+    ++numRevealed;
+    if (board[y][x].getNumber() == 0) {
       revealBlanks(x, y);
     }
   }
 
   private void revealBlanks(int x, int y) {
-    for (int i = y - 1; i < y + 1; i++) {
-      for (int j = x - 1; j < x + 1; j++) {
-        if (getSurroundingMines(j, i) == 0) {
+    for (int i = y - 1; i <= y + 1; i++) {
+      for (int j = x - 1; j <= x + 1; j++) {
+        if (withinBounds(j, i) && !board[i][j].isRevealedSquare() && !board[i][j].isMineSquare()) {
+          ++numRevealed;
           board[i][j].reveal();
-          revealBlanks(j, i);
+          if (board[i][j].getNumber() == 0) {
+            revealBlanks(j, i);
+          }
         }
       }
     }
   }
 
   private int getSurroundingMines(int x, int y) {
-    int numMines = 0;
-    for (int i = y - 1; i < y + 1; i++) {
-      for (int j = x - 1; j < x + 1; j++) {
-        if (i >= 0 && i < length && j >= 0 && j < width) {
-          if (board[j][i].isMineSquare()) {
-            numMines++;
-          }
+    int surroundingMines = 0;
+    for (int i = y - 1; i <= y + 1; i++) {
+      for (int j = x - 1; j <= x + 1; j++) {
+        if (withinBounds(j, i) && board[i][j].isMineSquare()) {
+          ++surroundingMines;
         }
       }
     }
-    return numMines;
+    return surroundingMines;
+  }
+
+  public boolean withinBounds(int x, int y) {
+    return y >= 0 && y < length && x >= 0 && x < width;
+  }
+
+  public boolean isWon() {
+    return numRevealed == length * width - numMines;
+  }
+
+  public void printBoard() {
+    System.out.println("Board:");
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < width; j++) {
+        Square square = board[i][j];
+        Flag flag = square.getFlag();
+        if (flag != Flag.EMPTY) {
+          if (flag == Flag.FLAGGED) {
+            System.out.printf("f ");
+          } else {
+            System.out.printf("? ");
+          }
+        } else if (!square.isRevealedSquare()) {
+          System.out.printf(". ");
+        } else if (square.isMineSquare()){
+          System.out.printf("x ");
+        } else {
+          System.out.printf(square.getNumber() + " ");
+        }
+      }
+      System.out.printf("\n");
+    }
+  }
+
+  public void fullBoardPrint() {
+    System.out.println("Full Board:");
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < width; j++) {
+        Square square = board[i][j];
+        if (square.isMineSquare()) {
+          System.out.printf("x ");
+        } else {
+          System.out.printf(square.getNumber() + " ");
+        }
+      }
+      System.out.printf("\n");
+    }
   }
 }
