@@ -7,16 +7,36 @@ public class Board {
   private final int length;
   private int numRevealed;
 
-  public Board(int width, int length) {
+  public static final int EASY_PROBABILITY = 90;
+  public static final int MEDIUM_PROBABILITY = 80;
+  public static final int HARD_PROBABILITY = 70;
+
+  public Board(int width, int length, Difficulty difficulty) {
     this.width = width;
     this.length = length;
     this.numRevealed = 0;
     this.board = new Square[length][width];
     Random random = new Random();
+    int probability;
+    switch (difficulty) {
+      case EASY: {
+        probability = EASY_PROBABILITY;
+        break;
+      }
+      case MEDIUM: {
+        probability = MEDIUM_PROBABILITY;
+        break;
+      }
+      case HARD:
+        // fall-through
+      default:
+        probability = HARD_PROBABILITY;
+    }
+
     int mineNum = 0;
     for (int i = 0; i < length; i++) {
       for (int j = 0; j < width; j++) {
-        boolean isMine = random.nextInt(100) > 90;
+        boolean isMine = random.nextInt(100) > probability;
         if (isMine) {
           ++mineNum;
         }
@@ -86,7 +106,7 @@ public class Board {
     return numRevealed == length * width - numMines;
   }
 
-  public void printBoard(boolean isLose) {
+  public void printBoard(boolean revealBombs) {
     System.out.println("Board:");
     System.out.printf("\\ ");
     for (int i = 0; i < width; i++) {
@@ -105,11 +125,11 @@ public class Board {
           } else {
             System.out.printf("? ");
           }
-        } else if (square.isMineSquare() && isLose) {
+        } else if (square.isMineSquare() && revealBombs) {
           System.out.printf("x ");
         } else if (!square.isRevealedSquare()) {
           System.out.printf(". ");
-        } else if (square.isMineSquare()){
+        } else if (square.isMineSquare()) {
           System.out.printf("x ");
         } else {
           System.out.printf(square.getNumber() + " ");
