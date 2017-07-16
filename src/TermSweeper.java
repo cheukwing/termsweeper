@@ -71,26 +71,22 @@ public class TermSweeper {
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
 
-    while (!board.isWon()) {
+    while (!board.hasFinished()) {
       board.printBoard(false, tiles);
 
       String[] tokens;
       do {
         System.out.println("Enter your move: ");
         tokens = sc.nextLine().split(" ");
-      } while (tokens.length == 3 && Character.isAlphabetic(tokens[0].charAt(0))
-          && !checkNumericString(tokens[1]) && !checkNumericString(tokens[2]));
+      } while (!(tokens.length == 3 && Character.isAlphabetic(tokens[0].charAt(0))
+          && checkNumericString(tokens[1]) && checkNumericString(tokens[2])));
       char c = tokens[0].charAt(0);
       int x = Integer.parseInt(tokens[1]);
       int y = Integer.parseInt(tokens[2]);
 
       switch (c) {
         case 'p': {
-          if (!board.play(x, y)) {
-            board.printBoard(true, tiles);
-            System.out.println("You Lose!");
-            return;
-          }
+          board.play(x, y);
           break;
         }
         case 'f': {
@@ -112,7 +108,11 @@ public class TermSweeper {
     }
 
     board.printBoard(true, tiles);
-    System.out.println("You Win!");
+    if (board.hasWon()) {
+      System.out.println("You Win!");
+    } else {
+      System.out.println("You Lose!");
+    }
   }
 
   public static void main(String[] args) {

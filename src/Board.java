@@ -7,6 +7,7 @@ public class Board {
   private final int width;
   private final int length;
   private int numRevealed;
+  private boolean hasLost;
 
   public static final int EASY_PROBABILITY = 90;
   public static final int MEDIUM_PROBABILITY = 80;
@@ -16,6 +17,7 @@ public class Board {
     this.width = width;
     this.length = length;
     this.numRevealed = 0;
+    this.hasLost = false;
     this.board = new Square[length][width];
     Random random = new Random();
     int probability;
@@ -54,13 +56,15 @@ public class Board {
     this.numMines = mineNum;
   }
 
-  public boolean play(int x, int y) {
-    revealSurroundings(x, y);
-    return !board[y][x].isMineSquare();
+  public void play(int x, int y) {
+    if (withinBounds(x, y) && board[y][x].getFlag() == Flag.EMPTY) {
+      revealSurroundings(x, y);
+      hasLost = board[y][x].isMineSquare();
+    }
   }
 
   public void flag(int x, int y, Flag flag) {
-    if (!board[y][x].isRevealedSquare()) {
+    if (withinBounds(x, y) && !board[y][x].isRevealedSquare()) {
       board[y][x].setFlag(flag);
     }
   }
@@ -103,8 +107,12 @@ public class Board {
     return y >= 0 && y < length && x >= 0 && x < width;
   }
 
-  public boolean isWon() {
-    return numRevealed == length * width - numMines;
+  public boolean hasFinished() {
+    return numRevealed == length * width - numMines || hasLost;
+  }
+
+  public boolean hasWon() {
+    return hasFinished() && !hasLost;
   }
 
   public void printBoard(boolean revealBombs, JButton[][] tiles) {
