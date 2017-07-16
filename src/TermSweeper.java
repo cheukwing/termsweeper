@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.Scanner;
 
 public class TermSweeper {
@@ -14,12 +15,7 @@ public class TermSweeper {
     return true;
   }
 
-  public static void main(String[] args) {
-    System.out.println("Welcome to TermSweeper!");
-    System.out.println("To reveal a tile, type \"p <x> <y>\"");
-    System.out.println("To flag, qFlag or clear type \"f/q/c <x> <y> \"");
-
-    Scanner sc = new Scanner(System.in);
+  private static void game(Scanner sc, JFrame frame) {
     String input;
     do {
       System.out.println("Enter the board width: ");
@@ -59,15 +55,14 @@ public class TermSweeper {
     Board board = new Board(width, length, difficulty);
     System.out.println();
 
-    JFrame frame = new JFrame("TermSweeper");
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.getContentPane().removeAll();
     GridLayout grid = new GridLayout(length, width);
     frame.setLayout(grid);
 
     JButton[][] tiles = new JButton[length][width];
     for (int i = 0; i < length; i++) {
       for (int j = 0; j < width; j++) {
-        tiles[i][j] = new JButton("Blank");
+        tiles[i][j] = new JButton("BLANK");
         frame.add(tiles[i][j]);
       }
     }
@@ -118,7 +113,23 @@ public class TermSweeper {
 
     board.printBoard(true, tiles);
     System.out.println("You Win!");
-    sc.close();
   }
 
+  public static void main(String[] args) {
+    System.out.println("Welcome to TermSweeper!");
+    System.out.println("To reveal a tile, type \"p <x> <y>\"");
+    System.out.println("To flag, qFlag or clear type \"f/q/c <x> <y> \"");
+
+    Scanner sc = new Scanner(System.in);
+    JFrame frame = new JFrame("TermSweeper");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    String input;
+    do {
+      game(sc, frame);
+      System.out.println("Do you want to play again? <y>/<n>");
+      input = sc.nextLine();
+    } while (input.length() > 0 && Character.toLowerCase(input.charAt(0)) == 'y');
+    sc.close();
+    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+  }
 }
