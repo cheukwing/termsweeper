@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.Scanner;
 
 public class TermSweeper {
@@ -22,23 +24,24 @@ public class TermSweeper {
     do {
       System.out.println("Enter the board width: ");
       input = sc.nextLine();
-    } while (!checkNumericString(input));
+    } while (input.length() < 1 || !checkNumericString(input));
     int width = Integer.parseInt(input);
 
     do {
       System.out.println("Enter the board length: ");
       input = sc.nextLine();
-    } while (!checkNumericString(input));
+    } while (input.length() < 1 || !checkNumericString(input));
     int length = Integer.parseInt(input);
 
     char difficultySelection;
+    // TODO: CHECK IF EMPTY INPUT
     do {
       System.out.println("Enter your difficulty: <E>asy <M>edium <H>ard");
       difficultySelection = Character.toLowerCase(sc.nextLine().charAt(0));
     } while (difficultySelection != 'e' && difficultySelection != 'm'
         && difficultySelection != 'h');
     Difficulty difficulty;
-    switch(difficultySelection) {
+    switch (difficultySelection) {
       case 'e': {
         difficulty = Difficulty.EASY;
         break;
@@ -56,8 +59,25 @@ public class TermSweeper {
     Board board = new Board(width, length, difficulty);
     System.out.println();
 
-    while(!board.isWon()) {
-      board.printBoard(false);
+    JFrame frame = new JFrame("TermSweeper");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    GridLayout grid = new GridLayout(length, width);
+    frame.setLayout(grid);
+
+    JButton[][] tiles = new JButton[length][width];
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < width; j++) {
+        tiles[i][j] = new JButton("Blank");
+        frame.add(tiles[i][j]);
+      }
+    }
+
+    frame.pack();
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
+
+    while (!board.isWon()) {
+      board.printBoard(false, tiles);
 
       String[] tokens;
       do {
@@ -69,10 +89,10 @@ public class TermSweeper {
       int x = Integer.parseInt(tokens[1]);
       int y = Integer.parseInt(tokens[2]);
 
-      switch(c) {
+      switch (c) {
         case 'p': {
           if (!board.play(x, y)) {
-            board.printBoard(true);
+            board.printBoard(true, tiles);
             System.out.println("You Lose!");
             return;
           }
@@ -96,7 +116,7 @@ public class TermSweeper {
       }
     }
 
-    board.printBoard(true);
+    board.printBoard(true, tiles);
     System.out.println("You Win!");
     sc.close();
   }

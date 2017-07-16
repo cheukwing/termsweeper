@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.Random;
 
 public class Board {
@@ -106,7 +107,7 @@ public class Board {
     return numRevealed == length * width - numMines;
   }
 
-  public void printBoard(boolean revealBombs) {
+  public void printBoard(boolean revealBombs, JButton[][] tiles) {
     System.out.println("Board:");
     System.out.printf("\\ ");
     for (int i = 0; i < width; i++) {
@@ -117,22 +118,26 @@ public class Board {
     for (int i = 0; i < length; i++) {
       System.out.printf(i + " ");
       for (int j = 0; j < width; j++) {
+        JButton tile = tiles[i][j];
         Square square = board[i][j];
         Flag flag = square.getFlag();
         if (flag != Flag.EMPTY) {
           if (flag == Flag.FLAGGED) {
             System.out.printf("f ");
+            tile.setText("f");
           } else {
             System.out.printf("? ");
+            tile.setText("?");
           }
-        } else if (square.isMineSquare() && revealBombs) {
+        } else if (square.isMineSquare() && (revealBombs || square.isRevealedSquare())) {
           System.out.printf("x ");
+          tile.setText("x");
         } else if (!square.isRevealedSquare()) {
           System.out.printf(". ");
-        } else if (square.isMineSquare()) {
-          System.out.printf("x ");
+          tile.setText(".");
         } else {
           System.out.printf(square.getNumber() + " ");
+          tile.setText(Integer.toString(square.getNumber()));
         }
       }
       System.out.printf("\n");
