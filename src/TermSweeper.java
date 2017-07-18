@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowEvent;
 import java.util.Scanner;
 
 public class TermSweeper {
@@ -29,24 +26,22 @@ public class TermSweeper {
     } while (input.length() < 1 || !checkNumericString(input));
     int length = Integer.parseInt(input);
 
-    char difficultySelection;
-    // TODO: CHECK IF EMPTY INPUT
     do {
       System.out.println("Enter your difficulty: <E>asy <M>edium <H>ard");
-      difficultySelection = Character.toLowerCase(sc.nextLine().charAt(0));
-    } while (difficultySelection != 'e' && difficultySelection != 'm'
-        && difficultySelection != 'h');
+      input = sc.nextLine();
+    } while (input.length() != 1
+        || (input.charAt(0) != 'E' && input.charAt(0) != 'M' && input.charAt(0) != 'H'));
     Difficulty difficulty;
-    switch (difficultySelection) {
-      case 'e': {
+    switch (input.charAt(0)) {
+      case 'E': {
         difficulty = Difficulty.EASY;
         break;
       }
-      case 'm': {
+      case 'M': {
         difficulty = Difficulty.MEDIUM;
         break;
       }
-      case 'h':
+      case 'H':
         // fall-through
       default:
         difficulty = Difficulty.HARD;
@@ -72,8 +67,12 @@ public class TermSweeper {
     //frame.setLocationRelativeTo(null);
     //frame.setVisible(true);
 
+    boolean isNecessaryToPrintBoard = true;
     while (!board.hasFinished()) {
-      board.printBoard(false);
+      if (isNecessaryToPrintBoard) {
+        // prints the board only if the previous move was possible.
+        board.printBoard(false);
+      }
 
       String[] tokens;
       do {
@@ -87,28 +86,30 @@ public class TermSweeper {
 
       switch (c) {
         case 'p': {
-          board.play(x, y);
+          isNecessaryToPrintBoard = board.play(x, y);
           break;
         }
         case 'f': {
-          board.flag(x, y, Flag.FLAGGED);
+          isNecessaryToPrintBoard = board.flag(x, y, Flag.FLAGGED);
           break;
         }
         case 'q': {
-          board.flag(x, y, Flag.QUESTION_FLAGGED);
+          isNecessaryToPrintBoard = board.flag(x, y, Flag.QUESTION_FLAGGED);
           break;
         }
         case 'c': {
-          board.flag(x, y, Flag.EMPTY);
+          isNecessaryToPrintBoard = board.flag(x, y, Flag.EMPTY);
           break;
         }
         default: {
-          System.out.println("Unrecognised Move.");
+          // if unrecognised command, proceeds as if asking for move again.
+          isNecessaryToPrintBoard = false;
         }
       }
     }
 
     board.printBoard(true);
+
     if (board.hasWon()) {
       System.out.println("You Win!");
     } else {

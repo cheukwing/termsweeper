@@ -32,6 +32,7 @@ public class Board {
       }
       case HARD:
         // fall-through
+        // as enum, cannot not be HARD
       default:
         probability = HARD_PROBABILITY;
     }
@@ -56,25 +57,33 @@ public class Board {
     this.numMines = mineNum;
   }
 
-  public void play(int x, int y) {
+  public boolean play(int x, int y) {
     if (!withinBounds(x, y)) {
       System.out.println("Tile out of bounds!");
     } else if (board[y][x].getFlag() != Flag.EMPTY) {
       System.out.println("Cannot reveal a flagged tile!");
+    } else if (board[y][x].isRevealedSquare()) {
+      System.out.println("Tile is already revealed!");
     } else {
       revealSurroundings(x, y);
       hasLost = board[y][x].isMineSquare();
+      return true;
     }
+    return false;
   }
 
-  public void flag(int x, int y, Flag flag) {
+  public boolean flag(int x, int y, Flag flag) {
     if (!withinBounds(x, y)) {
       System.out.println("Tile out of bounds!");
     } else if (board[y][x].isRevealedSquare()) {
       System.out.println("Tile is already revealed!");
+    } else if (board[y][x].getFlag() == flag) {
+      System.out.println("Tile already holds this flag!");
     } else {
       board[y][x].setFlag(flag);
+      return true;
     }
+    return false;
   }
 
   private void revealSurroundings(int x, int y) {
@@ -111,7 +120,7 @@ public class Board {
     return surroundingMines;
   }
 
-  public boolean withinBounds(int x, int y) {
+  private boolean withinBounds(int x, int y) {
     return y >= 0 && y < length && x >= 0 && x < width;
   }
 
