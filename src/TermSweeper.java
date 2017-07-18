@@ -50,23 +50,6 @@ public class TermSweeper {
     Board board = new Board(width, length, difficulty);
     System.out.println();
 
-    //frame.getContentPane().removeAll();
-    //GridLayout grid = new GridLayout(length, width);
-    //frame.setLayout(grid);
-    /*
-    JButton[][] tiles = new JButton[length][width];
-    for (int i = 0; i < length; i++) {
-      for (int j = 0; j < width; j++) {
-        tiles[i][j] = new JButton("BLANK");
-        frame.add(tiles[i][j]);
-      }
-    }
-    */
-
-    //frame.pack();
-    //frame.setLocationRelativeTo(null);
-    //frame.setVisible(true);
-
     boolean isNecessaryToPrintBoard = true;
     while (!board.hasFinished()) {
       if (isNecessaryToPrintBoard) {
@@ -123,8 +106,6 @@ public class TermSweeper {
     System.out.println("To flag, qFlag or clear type \"f/q/c <x> <y> \"");
 
     Scanner sc = new Scanner(System.in);
-    //JFrame frame = new JFrame("TermSweeper");
-    //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     String input;
     do {
       game(sc);
@@ -132,6 +113,5 @@ public class TermSweeper {
       input = sc.nextLine();
     } while (input.length() > 0 && Character.toLowerCase(input.charAt(0)) == 'y');
     sc.close();
-    //frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
   }
 }
