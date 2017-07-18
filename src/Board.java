@@ -57,14 +57,22 @@ public class Board {
   }
 
   public void play(int x, int y) {
-    if (withinBounds(x, y) && board[y][x].getFlag() == Flag.EMPTY) {
+    if (!withinBounds(x, y)) {
+      System.out.println("Tile out of bounds!");
+    } else if (board[y][x].getFlag() != Flag.EMPTY) {
+      System.out.println("Cannot reveal a flagged tile!");
+    } else {
       revealSurroundings(x, y);
       hasLost = board[y][x].isMineSquare();
     }
   }
 
   public void flag(int x, int y, Flag flag) {
-    if (withinBounds(x, y) && !board[y][x].isRevealedSquare()) {
+    if (!withinBounds(x, y)) {
+      System.out.println("Tile out of bounds!");
+    } else if (board[y][x].isRevealedSquare()) {
+      System.out.println("Tile is already revealed!");
+    } else {
       board[y][x].setFlag(flag);
     }
   }
@@ -115,7 +123,7 @@ public class Board {
     return hasFinished() && !hasLost;
   }
 
-  public void printBoard(boolean revealBombs, JButton[][] tiles) {
+  public void printBoard(boolean revealBombs) {
     System.out.println("Board:");
     System.out.printf("\\ ");
     for (int i = 0; i < width; i++) {
@@ -126,26 +134,26 @@ public class Board {
     for (int i = 0; i < length; i++) {
       System.out.printf(i + " ");
       for (int j = 0; j < width; j++) {
-        JButton tile = tiles[i][j];
+        //JButton tile = tiles[i][j];
         Square square = board[i][j];
         Flag flag = square.getFlag();
         if (flag != Flag.EMPTY) {
           if (flag == Flag.FLAGGED) {
             System.out.printf("f ");
-            tile.setText("f");
+            //tile.setText("f");
           } else {
             System.out.printf("? ");
-            tile.setText("?");
+            //tile.setText("?");
           }
         } else if (square.isMineSquare() && (revealBombs || square.isRevealedSquare())) {
           System.out.printf("x ");
-          tile.setText("x");
+          //tile.setText("x");
         } else if (!square.isRevealedSquare()) {
           System.out.printf(". ");
-          tile.setText(".");
+          //tile.setText(".");
         } else {
           System.out.printf(square.getNumber() + " ");
-          tile.setText(Integer.toString(square.getNumber()));
+          //tile.setText(Integer.toString(square.getNumber()));
         }
       }
       System.out.printf("\n");
